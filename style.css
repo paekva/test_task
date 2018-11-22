@@ -21,21 +21,19 @@
 }
 
 .right > .btn{
-    width: 0; 
-    height: 0; 
-    border-top: 35px solid transparent;
-    border-bottom: 35px solid transparent;
     border-left: 35px solid blue;
 }
 
 .left > .btn{
+    border-right: 35px solid blue;
+}
+
+.btn{
     width: 0; 
     height: 0; 
     border-top: 35px solid transparent;
     border-bottom: 35px solid transparent;
-    border-right: 35px solid blue;
 }
-
 
 .main{
     background: white;
@@ -67,3 +65,18 @@
     margin: 0;
     padding: 0;
    }
+
+
+.removeBtn{
+    width: 65px;
+    height: 18px;
+}
+
+.list-item{
+    width: 97%;
+    border: 1px solid gray;
+    padding: 2px;
+    margin: 1px;
+    display: grid;
+    grid-template-columns: 70px 30px 65px;
+}
