@@ -32,9 +32,11 @@ input.addEventListener("keyup", function(event) {
         list_item_btn.addEventListener("click", function(event){
           event.preventDefault();
 
+          //delete from view
           list_item_btn.parentElement.remove();
           
           //delete from array
+          //HERE
         });
 
         let list_item_time = document.createElement("p");
@@ -51,4 +53,50 @@ input.addEventListener("keyup", function(event) {
         
         console.log(dataSet);
       }
+});
+
+const leftBtn = document.getElementById("left-side-bar-btn");
+
+leftBtn.addEventListener("click", function(event){
+    event.preventDefault();
+    
+    let leftBar = leftBtn.parentElement;
+
+    if(leftBar.getAttribute("open")==="true"){
+
+      leftBtn.setAttribute("class", "btn absolute");
+      leftBar.setAttribute("class", "right side-bar closed");
+      leftBar.setAttribute("open","false");
+      
+    }
+    else {
+
+      leftBtn.setAttribute("class", "btn");
+      leftBar.setAttribute("class", "left side-bar");
+      leftBar.setAttribute("open","true");
+      
+    }
+});
+
+const rightBtn = document.getElementById("right-side-bar-btn");
+
+rightBtn.addEventListener("click", function(event){
+    event.preventDefault();
+
+    let rightBar = rightBtn.parentElement;
+
+    if(rightBar.getAttribute("open")==="true"){
+
+      rightBtn.setAttribute("class", "btn absolute");
+      rightBar.setAttribute("class", "left side-bar closed");
+      rightBar.setAttribute("open","false");
+      
+    }
+    else {
+
+      rightBtn.setAttribute("class", "btn");
+      rightBar.setAttribute("class", "right side-bar");
+      rightBar.setAttribute("open","true");
+      
+    }
 });
