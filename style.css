@@ -69,10 +69,10 @@
     padding: 10px;
 }
 
-* {
+*{
     margin: 0;
     padding: 0;
-   }
+}
 
 
 .removeBtn{
@@ -86,5 +86,5 @@
     padding: 2px;
     margin: 1px;
     display: grid;
-    grid-template-columns: 70px 30px 65px;
+    grid-template-columns: 70px 35px 65px;
 }
