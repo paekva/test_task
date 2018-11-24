@@ -1,6 +1,6 @@
 let dataSet=[];
 const input = document.getElementById("input");
-const list = document.getElementById("list_space");
+const list = document.getElementById("list_container");
 
 // defining field for the graph
 const svg = d3.select("#graph")
@@ -10,7 +10,7 @@ const svg = d3.select("#graph")
 
 let ID = () => ( '_' + Math.random().toString(36).substr(2, 9) ); //simple id generator for items in list
 
-
+// Check for previous history
 if(localStorage.getItem("dataSet") !== null) {
   dataSet = JSON.parse(localStorage.getItem("dataSet"));
   dataSet.forEach(element => {
@@ -20,7 +20,7 @@ if(localStorage.getItem("dataSet") !== null) {
   drawGraph();
 }
 
-// LIST OF VALUES representation on the view
+// Addition of new item to the list 
 input.addEventListener("keyup", function(event) {
       event.preventDefault();
       if (event.keyCode === 13) {
@@ -56,32 +56,30 @@ function addNewItemToView(item){
   list_item.setAttribute("class","list-item");
   list_item.setAttribute("id",item.id);
           
-  let list_item_btn = document.createElement("button");
-  list_item_btn.setAttribute("class","removeBtn");
-  list_item_btn.innerHTML = "Remove";
-  list_item_btn.addEventListener("click", function(event){
-    // "remove btn" - click event
+  let item_remove_btn = document.createElement("button");
+  item_remove_btn.setAttribute("class","removeBtn");
+  item_remove_btn.innerHTML = "Remove";
+
+  item_remove_btn.addEventListener("click", function(event){
     event.preventDefault();
 
-    let list_item_tmp = list_item_btn.parentElement; //delete from data model
+    let list_item_tmp = item_remove_btn.parentElement; 
     let list_item_id = dataSet.findIndex(x => x.id === list_item_tmp.getAttribute("id"));
-    dataSet.splice(list_item_id,1);
+    dataSet.splice(list_item_id,1); //delete from data model
 
-    localStorage.setItem("dataSet",JSON.stringify(dataSet));
+    localStorage.setItem("dataSet",JSON.stringify(dataSet)); //remember new data model in the storage
 
-    list_item_btn.parentElement.remove();//delete from view 
+    item_remove_btn.parentElement.remove();//delete from view 
     
     drawGraph();
   });
 
   
   let list_item_time = document.createElement("p");
-  
   let ms = item.time%1000;
   let s = parseInt(item.time/1000)-parseInt(item.time/60/1000)*60;
   let m = parseInt(item.time/60/1000)-parseInt(item.time/60/60/1000)*60;
-
-  list_item_time.innerHTML=m+":"+s+"."+ms;
+  list_item_time.innerHTML=m+":"+s+"."+ms; // setting up time field
   list_item_time.setAttribute("class","list-item-time");
 
   let list_item_value = document.createElement("h4");
@@ -89,7 +87,7 @@ function addNewItemToView(item){
   
   list_item.appendChild(list_item_time);
   list_item.appendChild(list_item_value);
-  list_item.appendChild(list_item_btn);
+  list_item.appendChild(item_remove_btn);
   list.appendChild(list_item); //adding new item to the view
 }
 
@@ -97,20 +95,20 @@ function drawGraph(){
   
   if(dataSet.length===0) return;
 
-  // DOMAIN VALUES
-  // MISTAKE ON FINDING THE SMALLEST VALUE
+  //SCALING
+  //from domain values
   let minY = d3.min(dataSet, (d) => parseInt(d.value) );
   let maxY = d3.max(dataSet, (d) => parseInt(d.value) );
 
   let minX = 0;
   let maxX = dataSet[dataSet.length-1].time - dataSet[0].time;
 
-  //RANGE VALUES
-
+  //to range values
   let graph = document.getElementById('graph');
   let svgHeight = graph.offsetHeight;
   let svgWidth = graph.offsetWidth; 
   let padding = 30;
+
 
   let xScale = d3.scale.linear()
                             .domain([minX,maxX])
@@ -120,10 +118,9 @@ function drawGraph(){
                             .domain([minY,maxY])
                             .range([-svgHeight/2+padding,svgHeight/2-padding]);
 
-  
+  //cleaning up old data
   svg.selectAll("path").remove();
   svg.selectAll("text").remove();
-
   let graphData = [];
   
   for(let i=0;i<dataSet.length;i++)
@@ -140,6 +137,7 @@ function drawGraph(){
                           .x(function(d) { return d.x; })
                           .y(function(d) { return d.y; });
 
+  //drawing new graph
   svg.append("path")
     .attr("d", lineFunction(graphData))
     .attr("stroke", "blue")
@@ -155,8 +153,8 @@ function drawGraph(){
     .attr("y", (d)=> svgHeight*0.5 - yScale(d.value) );
 }
 
-window.onresize = function() { console.log("WINDOWS"); drawGraph(); } ;
-
+//watching resize window event
+window.onresize = function() { drawGraph(); } ;
 
 // handlers for clicking buttons on side bars
 const leftBtn = document.getElementById("left-side-bar-btn");
@@ -170,18 +168,18 @@ leftBtn.addEventListener("click", function(event){
 
       leftBtn.setAttribute("class", "btn absolute");
       leftBar.setAttribute("class", "right side-bar closed");
-      leftBar.setAttribute("open","false");
+      leftBar.setAttribute("open", "false");
       
     }
     else {
 
       leftBtn.setAttribute("class", "btn");
-      leftBar.setAttribute("class", "left side-bar");
+      leftBar.setAttribute("class", "left side-bar opened");
       leftBar.setAttribute("open","true");
       
     }
 
-    drawGraph();
+    setTimeout(drawGraph, 500);
 });
 
 const rightBtn = document.getElementById("right-side-bar-btn");
@@ -201,11 +199,11 @@ rightBtn.addEventListener("click", function(event){
     else {
 
       rightBtn.setAttribute("class", "btn");
-      rightBar.setAttribute("class", "right side-bar");
+      rightBar.setAttribute("class", "right side-bar opened");
       rightBar.setAttribute("open","true");
       
     }
 
-    drawGraph();
+    setTimeout(drawGraph, 500);
 });
 
