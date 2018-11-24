@@ -1,7 +1,6 @@
 
 let dataSet = [];
 
-
 // LIST OF VALUES representation on the view
 const input = document.getElementById("input");
 const list = document.getElementById("list_space");
@@ -31,11 +30,14 @@ input.addEventListener("keyup", function(event) {
           // "remove btn" - click event
           event.preventDefault();
 
+          // PROBLEMS WITH REMOVING ITEM FROM A DATA SET!!!!!!!!!
           let list_item_tmp = list_item_btn.parentElement; //delete from data model
           let list_item_id = list_item_tmp.getAttribute("id");
           dataSet.splice(list_item_id,1);
 
-          list_item_btn.parentElement.remove();//delete from view          
+          list_item_btn.parentElement.remove();//delete from view  
+          
+          drawGraph();
         });
 
         let list_item_time = document.createElement("p");
@@ -62,27 +64,55 @@ const svg = d3.select("#graph")
     .attr("width","100%")
     .attr("height","100%");
 
+
 function drawGraph(){
+
+  console.log( "time to scale" );
+
+  // DOMAIN VALUES
+  let minY = d3.min(dataSet, (d) => d.value);
+  let maxY = d3.max(dataSet, (d) => d.value);
+
+  let minX = 0;
+  let maxX = dataSet[dataSet.length-1].time.getTime() - dataSet[0].time.getTime();
+
+
+  //RANGE VALUES
+
+  let graph = document.getElementById('graph');
+  let svgHeight = graph.offsetHeight;
+  let svgWidth = graph.offsetWidth; 
+  let padding = 30;
+
+  let xScale = d3.scale.linear()
+                            .domain([minX,maxX])
+                            .range([padding,svgWidth-padding]);
+  
+  let yScale = d3.scale.linear()
+                            .domain([minY,maxY])
+                            .range([-svgHeight/2+padding,svgHeight/2-padding]);
+
+  svg.selectAll("circle").remove();
+  svg.selectAll("text").remove();
+
   svg.selectAll("circle")
     .data(dataSet)
     .enter()
     .append("circle")
     .attr("r",5)
-    .attr("cx", (d) => 0.01*(d.time.getTime() - dataSet[0].time.getTime()) )
-    .attr("cy", (d,i)=>{ 
-      return window.innerHeight*0.5-d.value ;
-    });
+    .attr("cx", (d) => xScale(d.time.getTime() - dataSet[0].time.getTime()) )
+    .attr("cy", (d,i)=> svgHeight*0.5 - yScale(d.value) );
 
   svg.selectAll("text")
     .data(dataSet)
     .enter()
     .append("text")
     .text((d)=>d.value)
-    .attr("y",(d, i) => window.innerHeight*0.5-d.value )
-    .attr("x", (d) => 0.01*(d.time.getTime() - dataSet[0].time.getTime()) + 5 );
-    
+    .attr("x", (d) => xScale(d.time.getTime() - dataSet[0].time.getTime()) + 5 )
+    .attr("y", (d)=> svgHeight*0.5 - yScale(d.value) );
 }
 
+window.onresize = function() { console.log("WINDOWS"); drawGraph(); } ;
 
 
 // handlers for clicking buttons on side bars
@@ -107,6 +137,8 @@ leftBtn.addEventListener("click", function(event){
       leftBar.setAttribute("open","true");
       
     }
+
+    drawGraph();
 });
 
 const rightBtn = document.getElementById("right-side-bar-btn");
@@ -130,5 +162,7 @@ rightBtn.addEventListener("click", function(event){
       rightBar.setAttribute("open","true");
       
     }
+
+    drawGraph();
 });
 
