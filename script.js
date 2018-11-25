@@ -191,16 +191,18 @@ rightBtn.addEventListener("click", function(event){
 
     if(rightBar.getAttribute("open")==="true"){
 
-      rightBtn.setAttribute("class", "btn absolute");
       rightBar.setAttribute("class", "left side-bar closed");
       rightBar.setAttribute("open","false");
+      
+      rightBtn.setAttribute("class", "btn absolute");
       
     }
     else {
 
-      rightBtn.setAttribute("class", "btn");
       rightBar.setAttribute("class", "right side-bar opened");
       rightBar.setAttribute("open","true");
+
+      rightBtn.setAttribute("class", "btn");
       
     }
 
